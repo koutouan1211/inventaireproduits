@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lynda.inventaireproduits.entity.Article;
-import com.lynda.inventaireproduits.entity.Panier;
+
 import com.lynda.inventaireproduits.repository.ArticleRepository;
 import com.lynda.inventaireproduits.service.ArticleService;
 
@@ -34,11 +34,13 @@ public class ArticleController {
 	
 	
 	 @PostMapping("/{panierId}/article/{articleId}")
-	    public Panier ajouterArticle(@PathVariable Integer panierId,
-	                                 @PathVariable Integer articleId) {
-	        return articleService.ajoutArticle(panierId, articleId);
+	    public String ajouterArticle(@PathVariable Integer panierId,
+	                                 @PathVariable Integer articleId ,Integer quantite) {
+	        return articleService.ajoutArticle(articleId,panierId,quantite);
 	    }
 	
+	 
+	 
 	 @GetMapping("/{panierId}/total")
 	    public double total(@PathVariable Integer panierId) {
 	        return articleService.calculMontantTTC(panierId);

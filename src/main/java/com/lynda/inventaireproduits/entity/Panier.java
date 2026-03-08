@@ -11,8 +11,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table()
 public class Panier {
 
 	@Id
@@ -21,7 +23,7 @@ public class Panier {
 	
 	@OneToMany(mappedBy = "panier" , cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-	private List<Article> articles=new ArrayList<>();
+	private List<Stock> stocks=new ArrayList<>();
 
 	public Integer getId() {
 		return id;
@@ -31,12 +33,13 @@ public class Panier {
 		this.id = id;
 	}
 
-	public List<Article> getArticles() {
-		return articles;
+	public List<Stock> getStocks() {
+		return stocks;
 	}
 
-	public void setArticles(List<Article> articles) {
-		this.articles = articles;
+	public void setStocks(List<Stock> stocks) {
+		this.stocks = stocks;
 	}
+
 	
 }

@@ -2,16 +2,21 @@ package com.lynda.inventaireproduits.entity;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table
+@Table()
 public class Article {
 
 	@Id
@@ -19,19 +24,18 @@ public class Article {
 	private Integer id;
 	private String nom;
 	private Double prix;
-	private Integer articlerestant;
 	
-	@ManyToOne
-	@JoinColumn(name="panier_id", nullable=false)
-	private Panier panier;
-	
+	@OneToMany(mappedBy="article" ,cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Stock> stocks= new ArrayList<>();
 	
 	
-	public Panier getPanier() {
-		return panier;
+	
+	public List<Stock> getStocks() {
+		return stocks;
 	}
-	public void setPanier(Panier panier) {
-		this.panier = panier;
+	public void setStocks(List<Stock> stocks) {
+		this.stocks = stocks;
 	}
 	public Integer getId() {
 		return id;
@@ -51,12 +55,7 @@ public class Article {
 	public void setPrix(Double prix) {
 		this.prix = prix;
 	}
-	public Integer getArticlerestant() {
-		return articlerestant;
-	}
-	public void setArticlerestant(Integer articlerestant) {
-		this.articlerestant = articlerestant;
-	}
+	
 	
 	
 }
