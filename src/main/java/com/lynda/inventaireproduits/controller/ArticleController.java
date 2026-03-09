@@ -7,11 +7,14 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lynda.inventaireproduits.dto.ArticleDTO;
+import com.lynda.inventaireproduits.dto.StockDto;
 import com.lynda.inventaireproduits.entity.Article;
-
+import com.lynda.inventaireproduits.entity.Stock;
 import com.lynda.inventaireproduits.repository.ArticleRepository;
 import com.lynda.inventaireproduits.service.ArticleService;
 
@@ -26,21 +29,26 @@ public class ArticleController {
 		this.articleService=articleService;
 	}
 	
-	@GetMapping
-	public List<Article> getListArticle(){
-		List<Article> toutArticle=articleRepository.findAll();
-		return toutArticle;
-	}
-	
 	
 	 @PostMapping("/{panierId}/article/{articleId}")
-	    public String ajouterArticle(@PathVariable Integer panierId,
-	                                 @PathVariable Integer articleId ,Integer quantite) {
-	        return articleService.ajoutArticle(articleId,panierId,quantite);
+	    public String ajouterArticle(@RequestBody StockDto request,
+	    		                     @PathVariable Integer panierId,
+	                                 @PathVariable Integer articleId 
+	                                 ) {
+	        return articleService.ajoutArticle(request,articleId,panierId,request.getQuantite());
+	        
+	        
 	    }
 	
+	 //c'est pour recuper la liste des articles du panier
 	 
+	@GetMapping("/panier/{panierID}")
+	public List<ArticleDTO> getArticlePanier(@PathVariable Integer panierID){
+		
+		return articleService.getArticlePanier(panierID);
+	}
 	 
+	
 	 @GetMapping("/{panierId}/total")
 	    public double total(@PathVariable Integer panierId) {
 	        return articleService.calculMontantTTC(panierId);
