@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lynda.inventaireproduits.dto.ArticleDTO;
 import com.lynda.inventaireproduits.dto.StockDto;
 import com.lynda.inventaireproduits.entity.Article;
-import com.lynda.inventaireproduits.entity.Stock;
 import com.lynda.inventaireproduits.repository.ArticleRepository;
 import com.lynda.inventaireproduits.service.ArticleService;
 
@@ -30,12 +29,20 @@ public class ArticleController {
 	}
 	
 	
-	 @PostMapping("/{panierId}/article/{articleId}")
+	// récupérer tous les articles (pour la boutique)
+    @GetMapping
+    public List<Article> getListArticle(){
+        return articleService.getListArticle();
+    }
+	
+    
+	
+	 @PostMapping("/panier/article/{articleId}")
 	    public String ajouterArticle(@RequestBody StockDto request,
-	    		                     @PathVariable Integer panierId,
+	    		@PathVariable	Integer panierId,
 	                                 @PathVariable Integer articleId 
 	                                 ) {
-	        return articleService.ajoutArticle(request,articleId,panierId,request.getQuantite());
+	        return articleService.ajoutArticle(request,panierId,articleId,request.getQuantite());
 	        
 	        
 	    }

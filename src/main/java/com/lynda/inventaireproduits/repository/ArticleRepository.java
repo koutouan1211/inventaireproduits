@@ -10,6 +10,6 @@ import com.lynda.inventaireproduits.entity.Article;
 
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
-	List<Article> findByNomAndPrix(String nom,Double prix);
+	List<Article> findAll();
 	
 	}

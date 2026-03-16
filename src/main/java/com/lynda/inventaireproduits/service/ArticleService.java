@@ -2,9 +2,10 @@ package com.lynda.inventaireproduits.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.lynda.inventaireproduits.dto.ArticleDTO;
 import com.lynda.inventaireproduits.dto.StockDto;
@@ -28,6 +29,12 @@ public class ArticleService {
 		this.stockRepository=stockRepository;
 		
 	}
+	
+	
+	    public List<Article> getListArticle(){
+	        return articleRepository.findAll();
+	    }
+		
 	
 	//pour recuperer la liste des articles d'un panier
 	
@@ -70,46 +77,47 @@ public class ArticleService {
 	public static final double tva=0.18;
 	
 	
-	//on va ajouter des articles au panier
 	
-	public String ajoutArticle(StockDto request, Integer articleID ,Integer panierID,Integer quantite){
-		
-		Panier panier=panierRepository.findById(panierID)
-				.orElseThrow(()-> new RuntimeException("Panier Introuvable"));
-		Article article=articleRepository.findById(articleID)
-			.orElseThrow(() -> new RuntimeException("cet article est en rupture de stock"));
-		
-		List<Stock> stockExistant=stockRepository.findByPanierIdAndArticleId(panierID, articleID);
-		if(!stockExistant.isEmpty()) {
-			
-			Stock stock=stockExistant.get(0);
-			stock.setQuantite(stock.getQuantite() +quantite);
-			stockRepository.save(stock);
-			
-			for(int i=1;i<stockExistant.size();i++) {
-				stockRepository.delete(stockExistant.get(i));
-			}
-		}
-		else {
-			
-			//crée un nouveau stock
-			Stock stock=new Stock();
-			stock.setArticle(article);
-			stock.setPanier(panier);
-			stock.setQuantite(quantite);
-			
-			//mettre a jour les lists des stocks
-			panier.getStocks().add(stock);
-			article.getStocks().add(stock);
-					
-			//on va sauvegarder
-			stockRepository.save(stock);
-		}
+	//on va ajouter des articles au panier si celui ci n'existe pas deja dans la base de donnée
+	
+	public String ajoutArticle(StockDto request,Integer panierId, Integer articleId, Integer quantite) {
+
+	   // Panier panier = panierRepository.findById(panierId)
+	         //   .orElseGet(() -> {
+	             //   Panier nouveauPanier = new Panier();
+	              //  return panierRepository.save(nouveauPanier);
+	           // });
 		
 		
+	    
 		
-		return "Article ajouter au panier";
+		 Panier panier = (panierId != null)
+			        ? panierRepository.findById(panierId)
+			            .orElseGet(() -> panierRepository.save(new Panier()))
+			        : panierRepository.save(new Panier());
+
+	    Article article = articleRepository.findById(articleId)
+	            .orElseThrow(() -> new RuntimeException("Article introuvable"));
+
+	    Optional<Stock> stockExiste = stockRepository.findByPanierIdAndArticleId(panier.getId(),articleId);
+
+	    if(stockExiste.isPresent()){
+	        Stock stock = stockExiste.get();
+	        stock.setQuantite(stock.getQuantite() + quantite);
+	        stockRepository.save(stock);
+	    }
+	    else{
+	        Stock stock = new Stock();
+	        stock.setArticle(article);
+	        stock.setPanier(panier);
+	        stock.setQuantite(quantite);
+
+	        stockRepository.save(stock);
+	    }
+
+	    return "Article ajouté au panier";
 	}
+
 	
 	//on va calculer le total des prix et ajouter le TVA
 	public Double calculMontantHt(Integer panierID) {
