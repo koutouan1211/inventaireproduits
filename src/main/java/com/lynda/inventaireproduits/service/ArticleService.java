@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+
 
 import com.lynda.inventaireproduits.dto.ArticleDTO;
 import com.lynda.inventaireproduits.dto.StockDto;
 import com.lynda.inventaireproduits.entity.Article;
 import com.lynda.inventaireproduits.entity.Panier;
 import com.lynda.inventaireproduits.entity.Stock;
+import com.lynda.inventaireproduits.exception.RessourceNotFoundException;
 import com.lynda.inventaireproduits.repository.ArticleRepository;
 import com.lynda.inventaireproduits.repository.PanierRepository;
 import com.lynda.inventaireproduits.repository.StockRepository;
@@ -80,37 +81,30 @@ public class ArticleService {
 	
 	//on va ajouter des articles au panier si celui ci n'existe pas deja dans la base de donnée
 	
-	public String ajoutArticle(StockDto request,Integer panierId, Integer articleId, Integer quantite) {
+	public String ajoutArticle(StockDto request,Integer panierId) {
 
-	   // Panier panier = panierRepository.findById(panierId)
-	         //   .orElseGet(() -> {
-	             //   Panier nouveauPanier = new Panier();
-	              //  return panierRepository.save(nouveauPanier);
-	           // });
-		
-		
-	    
-		
-		 Panier panier = (panierId != null)
-			        ? panierRepository.findById(panierId)
-			            .orElseGet(() -> panierRepository.save(new Panier()))
-			        : panierRepository.save(new Panier());
+		//si le panier exixte on ajoute simplement sur la quantitée sinon on cré un nouveau panier
+	  Panier panier = panierRepository.findById(panierId)
+	      .orElseGet(() -> {
+	            Panier nouveauPanier = new Panier();
+	         return panierRepository.save(nouveauPanier);
+	           });
 
-	    Article article = articleRepository.findById(articleId)
-	            .orElseThrow(() -> new RuntimeException("Article introuvable"));
+	    Article article = articleRepository.findById(request.getArticleId())
+	            .orElseThrow(() -> new RessourceNotFoundException("Cet Article avec cet  id  "+request.getArticleId()+"est introuvable"));
 
-	    Optional<Stock> stockExiste = stockRepository.findByPanierIdAndArticleId(panier.getId(),articleId);
+	    Optional<Stock> stockExiste = stockRepository.findByPanierIdAndArticleId(panier.getId(),request.getArticleId());
 
 	    if(stockExiste.isPresent()){
 	        Stock stock = stockExiste.get();
-	        stock.setQuantite(stock.getQuantite() + quantite);
+	        stock.setQuantite(stock.getQuantite() + request.getQuantite());
 	        stockRepository.save(stock);
 	    }
 	    else{
 	        Stock stock = new Stock();
 	        stock.setArticle(article);
 	        stock.setPanier(panier);
-	        stock.setQuantite(quantite);
+	        stock.setQuantite(request.getQuantite());
 
 	        stockRepository.save(stock);
 	    }
@@ -118,6 +112,15 @@ public class ArticleService {
 	    return "Article ajouté au panier";
 	}
 
+	
+	//supprimer le stock (des article dans le panier)
+	
+	public void deleteStock(Integer id) {
+		Stock stock=stockRepository.findById(id)
+				.orElseThrow(()-> new RuntimeException("cet stock n'existe pas"));
+		stockRepository.delete(stock);
+	}
+	
 	
 	//on va calculer le total des prix et ajouter le TVA
 	public Double calculMontantHt(Integer panierID) {

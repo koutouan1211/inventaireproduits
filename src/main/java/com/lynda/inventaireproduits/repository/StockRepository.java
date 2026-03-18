@@ -12,5 +12,5 @@ import com.lynda.inventaireproduits.entity.Stock;
 public interface StockRepository extends JpaRepository<Stock, Integer>{
 
 	Optional<Stock> findByPanierIdAndArticleId(Integer panierId,Integer articleId );
-	
+	Optional<Stock> findById(Integer id);
 }
