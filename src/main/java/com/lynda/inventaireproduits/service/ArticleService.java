@@ -52,7 +52,7 @@ public class ArticleService {
 			request.setNom(stock.getArticle().getNom());
 			request.setPrix(stock.getArticle().getPrix());
 			request.setQuantite(stock.getQuantite());
-			
+			request.setStockId(stock.getId());
 			listArticle.add(request);
 			
 		}
@@ -112,6 +112,7 @@ public class ArticleService {
 	    return "Article ajouté au panier";
 	}
 
+	
 	
 	//supprimer le stock (des article dans le panier)
 	

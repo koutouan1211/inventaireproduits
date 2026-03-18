@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lynda.inventaireproduits.dto.ArticleDTO;
 import com.lynda.inventaireproduits.dto.StockDto;
 import com.lynda.inventaireproduits.entity.Article;
-import com.lynda.inventaireproduits.entity.Stock;
 import com.lynda.inventaireproduits.repository.ArticleRepository;
 import com.lynda.inventaireproduits.service.ArticleService;
 
@@ -51,7 +50,7 @@ public class ArticleController {
 	
 	//supprimer des articles dans le panier
     
-    @DeleteMapping("/suppression/{id}")
+    @DeleteMapping("/stock/{id}")
     public ResponseEntity<String> supprimerArticle(@PathVariable Integer id){
     	articleService.deleteStock(id);
     	return ResponseEntity.ok("Cet Article a été supprimer");

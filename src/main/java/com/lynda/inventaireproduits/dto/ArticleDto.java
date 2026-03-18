@@ -7,7 +7,8 @@ public class ArticleDTO {
 	private  String nom;
 	private  Double prix;
 	private  Integer quantite;
-
+    private Integer stockId;
+    
 	
 	public ArticleDTO(String nom,Double prix,Integer quantite) {
 		this.nom=nom;
@@ -20,6 +21,17 @@ public class ArticleDTO {
 	public ArticleDTO() {
 		
 	}
+
+	
+	public Integer getStockId() {
+		return stockId;
+	}
+
+
+	public void setStockId(Integer stockId) {
+		this.stockId = stockId;
+	}
+
 
 	public String getNom() {
 		return nom;
